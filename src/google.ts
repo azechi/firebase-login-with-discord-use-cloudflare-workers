@@ -1,4 +1,4 @@
-import { fetchJson, authorizer, RequireAuthorize, JSONRequest } from "../apiRequest";
+import { fetchJson, authorizer, RequireAuthorize, JSONRequest } from "./apiRequest";
 import { generateJwt, KeyInfo } from './googleAuth';
 
 export { buildJsonFetcher, createUser, existsUser };

@@ -1,4 +1,4 @@
-import { base64UrlEncode } from '../base64Url';
+import { base64UrlEncode } from './base64Url';
 
 export { generateJwt, createCustomToken, importKey }
 

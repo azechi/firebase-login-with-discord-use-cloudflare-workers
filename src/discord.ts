@@ -36,11 +36,13 @@ function tokenRequest(params: {
   }) as JSONRequest<TokenResponse>;
 }
 
-export interface UsersMeRequest {}
+export interface UsersMeResponse {
+  id: string;
+}
 
 function usersMeRequest() {
   return new Request("https://discord.com/api/users/@me") as RequireAuthorize<
-    JSONRequest<UsersMeRequest>
+    JSONRequest<UsersMeResponse>
   >;
 }
 

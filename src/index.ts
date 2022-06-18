@@ -3,7 +3,11 @@ import { base64UrlEncode } from "./base64Url";
 import { fetchJson, authorizer } from "./apiRequest";
 import { authorizeUrl, tokenRequest, usersMeRequest } from "./discord";
 
+import { buildJsonFetcher, existsUser, createUser } from './google';
+import { createCustomToken, importKey } from './googleAuth';
+
 export interface Env {
+  allow_origin: string;
   discord_client_id: string;
   secret_key: string;
   google: string;
@@ -49,7 +53,7 @@ export default {
         return new Response(null, { 
           status: 204,
           headers: {
-            "Access-Control-Allow-Origin": "https://azechi.github.io",
+            "Access-Control-Allow-Origin": env.allow_origin,
             "Access-Control-Allow-Methods": "POST",
             "Access-Control-Allow-Credentials": "true",
           },
@@ -74,9 +78,27 @@ export default {
       );
       const authorize = authorizer(access_token);
       const user = await fetchJson(authorize(usersMeRequest()));
-      return new Response(`${JSON.stringify(user)}`, {
+
+      const uid = `discord:${user.id}`;
+
+      // firebase
+      const google = JSON.parse(env.google);
+      const aud = "https://identitytoolkit.googleapis.com/"
+      const fetch = await buildJsonFetcher(aud, google);
+      
+      const exists = await existsUser(fetch, uid);
+      if(exists) {
+        console.log(`もうすでにあるuidです ${uid}`);
+      } else {
+        await fetch(createUser({localId: uid}));
+      }
+
+      const key = await importKey(google.private_key);
+      const token = await createCustomToken(key, google.client_email, uid);
+
+      return new Response(`${JSON.stringify(token)}`, {
         headers: {
-          "Access-Control-Allow-Origin": "https://azechi.github.io",
+          "Access-Control-Allow-Origin": env.allow_origin,
           "Access-Control-Allow-Credentials": "true",
         },
       });
