@@ -1,0 +1,15 @@
+compatibility_date = "2022-06-16"
+
+[env.discord]
+name = "login-with-discord"
+main = "src/index.ts"
+
+services = [
+  {binding = "firebase", service = "firebase", environment = "production"}
+]
+
+[env.firebase]
+name = "firebase"
+main = "src/firebase/index.ts"
+workers_dev = false
+#secret.google
